@@ -1,0 +1,62 @@
+1)Create angular app
+    note down Project Id
+    Web API key
+
+2)Login to git hub
+    Create empty Project
+
+3)In local machine create angular app   
+    push to git repo
+
+4)Login to azure devops
+    Go to pipeline
+    Go to Build ==> New ==> New build Pipeline
+    Click on use clasic editor ==> Github ==> Select Repository from git ==> select branch ==> continue
+    Select template called Empty job
+    click on + (agent job) icon search npm ==> add
+        display name: npm install
+        command: install 
+    click on + (agent job) icon search npm ==> add
+        display name: angular build
+        command: custom
+        command and arguments: ng build --prod --build-optimizer
+    click on + (agent job) icon search publish buid artiface ==> add
+        display name: Publish Artifact: drop/dist
+        path to publish: dist
+        Artifact name: drop/dist
+        Artifact publish location: Azure pipelines
+    click on + (agent job) icon search publish buid artiface ==> add
+        display name: Publish firebase.json
+        path to publish: drop
+        Artifact name: firebase.json
+        Artifact publish location: Azure pipelines
+
+    click on save and queue
+
+5)Create release
+    pipeline ==> Releases ==> New ==> New release pipeline
+    Select a template called Empty Job
+        Stage name: Any meaningful name(stage1)
+        Stage owner: Abhinandan
+    Click on Add Artifact
+        Build
+        Source: Any build which is listed in dropdown
+        Add
+    Click on Satge 1
+        Tasks
+        click on + agent job    
+        search npm ==> add
+        Display name = firebase tools
+        command : custom 
+        command and argument: install -g firebase-tools
+
+        click on + agent job    
+        search command ==> add
+        Display name = firebase deploy
+        script: echo Deploying Firebase Hosting
+                firebase deploy --only hosting --project rapidvalue-6a299 --token AIzaSyBaJfdb1leFizqOEqE0txMVylsnoDm6-l8
+                echo Deployed Firebase Hosting
+            Note: token and project you will get from firebase application settings
+    save and queue
+        
+
